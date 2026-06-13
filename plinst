@@ -1,0 +1,51 @@
+#!/bin/sh
+
+. /etc/os-release
+
+alias dialog='dialog --backtitle "$NAME Installation (with plinst) ## 2026 progwi0"'
+
+dialog --title "First steps" --msgbox "Welcome to plinst! This small script helps you to install $NAME on your device." 8 50
+
+if [ "$LANG" == "en" ]; then
+	HOSTNAME=$(dialog --title "Hostname" --inputbox "Enter your hostname:" 8 40 "progwilinux-device"  3>&1 1>&2 2>&3)
+elif [ "$LANG" == "ru" ]; then
+	HOSTNAME=$(dialog --title "Imya domena" --inputbox "Vpishite imya domena:" 8 40 "progwilinux-device"  3>&1 1>&2 2>&3)
+fi
+
+if [ $? -ne 0 ]; then
+	echo "Using defaults"
+	HOSTNAME="progwilinux-device"
+fi
+
+if [ "$LANG" == "en" ]; then
+	SOFTWARE=$(dialog --title "Software Selection" --checklist "Select software you use or planning to use:" 15 50 10 "Progwilinux"	1 'on' "Xorg"	2 'off' "Wayland"	3 'off'	"Console applications"	4 'off'	"Distrobox"	5 'off' "Fastfetch"	6 'off' "GNU coreutils"	7 'off' "Busybox"	8 'on' 3>&1 1>&2 2>&3)
+elif [ "$LANG" == "ru" ]; then
+	SOFTWARE=$(dialog --title "Vibor PO" --checklist "Viberite PO kotorim vi polzuetes ili planiruete polzovatsa:" 15 50 10 "Progwilinux"	1 'on' "Xorg"	2 'off' "Wayland"	3 'off'	"Konsolnie prilozheniya"	4 'off'	"Distrobox"	5 'off' "Fastfetch"	6 'off' "GNU coreutils"	7 'off' "Busybox"	8 'on' 3>&1 1>&2 2>&3)
+fi
+
+if [ $? -ne 0 ]; then
+	echo "You can't use system without software."
+	exit 1
+fi
+
+if [ "$LANG" == "en" ]; then
+	DISK=$(dialog --title "Disk" --inputbox "Enter your disk name (by default it's /dev/sda):" 9 40 "/dev/sda"  3>&1 1>&2 2>&3)
+elif [ "$LANG" == "ru" ]; then
+	DISK=$(dialog --title "Disk" --inputbox "Vpishite imya diska (po umolchaniyu eto /dev/sda):" 9 40 "/dev/sda"  3>&1 1>&2 2>&3)
+fi
+
+if [ $? -ne 0 ]; then
+	echo "No disk."
+	exit 1
+fi
+
+if [ "$LANG" == "en" ]; then
+	CONFIRM=$(dialog --title "Check" --yesno "Everything is okay?:\nHostname: $HOSTNAME\nSoftware: $SOFTWARE\nDisk: $DISK" 8 50 3>&1 1>&2 2>&3)
+elif [ "$LANG" == "ru" ]; then
+	CONFIRM=$(dialog --title "Proverka" --yesno "Vse ustraivaet?:\nImya domena: $HOSTNAME\nVibor PO: $SOFTWARE\nDisk: $DISK" 8 50 3>&1 1>&2 2>&3)
+fi
+
+if [ $? -ne 0 ]; then
+	echo "Installation aborted."
+	exit 1
+fi
